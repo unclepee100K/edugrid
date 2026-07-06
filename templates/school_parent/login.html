@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Parent Login{% endblock %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="fas fa-user-lock"></i> Parent Login</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Enter the Student ID and the 4‑digit PIN provided by the school.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label>Student ID</label>
+                        <input type="text" name="student_id" class="form-control" placeholder="e.g., GRD-2026-SCI-001" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>PIN</label>
+                        <input type="password" name="pin" class="form-control" placeholder="4-digit PIN" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">View Progress</button>
+                </form>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger mt-3">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

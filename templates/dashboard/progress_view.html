@@ -1,0 +1,196 @@
+{% extends 'base.html' %}
+
+{% block title %}Academic Progress - EduGrid{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">Academic Progress</h1>
+    <div>
+        <span class="badge bg-primary fs-6">{{ student.student_id }}</span>
+        <span class="badge bg-secondary fs-6">{{ student.current_form }}</span>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Overall Stats -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h6 class="text-muted">Overall Average</h6>
+                <h2 class="display-4">{{ overall_average|floatformat:1 }}%</h2>
+                <small>Based on {{ total_submissions }} submissions</small>
+                <div class="mt-3">
+                    <div class="progress" style="height: 12px;">
+                        <div class="progress-bar {% if overall_average >= 70 %}bg-success{% elif overall_average >= 50 %}bg-warning{% else %}bg-danger{% endif %}"
+                             style="width: {{ overall_average }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Performance Chart -->
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5><i class="fas fa-chart-pie"></i> Subject Performance</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="subjectChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Termly Progress Chart -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5><i class="fas fa-chart-line"></i> Termly Progress</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="termChart" height="150"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Subject Breakdown -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5><i class="fas fa-table"></i> Detailed Subject Analysis</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Average</th>
+                                <th>Total Marks</th>
+                                <th>Assignments</th>
+                                <th>ZIMSEC Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for subject, data in subject_data.items %}
+                            <tr>
+                                <td>{{ subject }}</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                            <div class="progress-bar {% if data.average >= 70 %}bg-success{% elif data.average >= 50 %}bg-warning{% else %}bg-danger{% endif %}"
+                                                 style="width: {{ data.average }}%"></div>
+                                        </div>
+                                        <span>{{ data.average }}%</span>
+                                    </div>
+                                </td>
+                                <td>{{ data.total|floatformat:1 }}</td>
+                                <td>{{ data.count }}</td>
+                                <td>
+                                    {% if data.average >= 80 %}
+                                        <span class="badge bg-success">1 (Distinction)</span>
+                                    {% elif data.average >= 70 %}
+                                        <span class="badge bg-info">2</span>
+                                    {% elif data.average >= 60 %}
+                                        <span class="badge bg-primary">3</span>
+                                    {% elif data.average >= 50 %}
+                                        <span class="badge bg-warning">4</span>
+                                    {% elif data.average >= 40 %}
+                                        <span class="badge bg-orange">5</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">6+</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Subject Performance Chart
+    const ctx1 = document.getElementById('subjectChart').getContext('2d');
+    new Chart(ctx1, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Average Score (%)',
+                data: {{ chart_data|safe }},
+                backgroundColor: [
+                    'rgba(26, 35, 126, 0.7)',
+                    'rgba(46, 125, 50, 0.7)',
+                    'rgba(245, 124, 0, 0.7)',
+                    'rgba(198, 40, 40, 0.7)',
+                    'rgba(156, 39, 176, 0.7)',
+                ],
+                borderColor: [
+                    'rgba(26, 35, 126, 1)',
+                    'rgba(46, 125, 50, 1)',
+                    'rgba(245, 124, 0, 1)',
+                    'rgba(198, 40, 40, 1)',
+                    'rgba(156, 39, 176, 1)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) { return value + '%'; }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+
+    // Termly Progress Chart
+    const ctx2 = document.getElementById('termChart').getContext('2d');
+    new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: {{ term_labels|safe }},
+            datasets: [{
+                label: 'Average Score',
+                data: {{ term_data|safe }},
+                borderColor: 'rgba(26, 35, 126, 1)',
+                backgroundColor: 'rgba(26, 35, 126, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: 'rgba(26, 35, 126, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) { return value + '%'; }
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

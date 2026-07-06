@@ -1,0 +1,207 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGrid - {% block title %}Dashboard{% endblock %}</title>
+
+    <!-- Bootstrap 5 (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    {% block extra_css %}{% endblock %}
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .sidebar {
+            background-color: #1a237e;
+            min-height: 100vh;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.7);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+        }
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: #3949ab;
+        }
+        .sidebar .nav-link i {
+            width: 24px;
+            margin-right: 10px;
+        }
+        .main-content {
+            padding: 30px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        .stat-card.green {
+            background: linear-gradient(135deg, #1b5e20, #2e7d32);
+        }
+        .stat-card.orange {
+            background: linear-gradient(135deg, #e65100, #f57c00);
+        }
+        .stat-card.red {
+            background: linear-gradient(135deg, #b71c1c, #c62828);
+        }
+        .low-data-badge {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .low-data-badge:hover {
+            background: #555;
+        }
+        .submission-card {
+            border-left: 4px solid #1a237e;
+        }
+        .submission-card.pending {
+            border-left-color: #f57c00;
+        }
+        .submission-card.marked {
+            border-left-color: #2e7d32;
+        }
+        .submission-card.late {
+            border-left-color: #c62828;
+        }
+        @media print {
+            .sidebar, .no-print { display: none; }
+            .main-content { width: 100%; padding: 0; }
+        }
+
+        /* Logout button styling */
+        .logout-btn {
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            padding: 12px 20px;
+            color: rgba(255,255,255,0.7);
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .logout-btn:hover {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+        }
+        .logout-btn i {
+            width: 24px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-md-block sidebar p-0 no-print">
+                <div class="position-sticky">
+                    <div class="p-3 text-center border-bottom border-secondary">
+                        <h4><i class="fas fa-graduation-cap"></i> EduGrid</h4>
+                        <small class="text-muted">Zimbabwe Education</small>
+                    </div>
+
+                    <ul class="nav flex-column p-3">
+                        <!-- Dashboard - only show for students -->
+                        {% if user.is_student %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" href="{% url 'student_dashboard' %}">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/dashboard/progress/' %}active{% endif %}" href="{% url 'view_progress' %}">
+                                <i class="fas fa-chart-line"></i> Progress
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Teacher links -->
+                        {% if user.is_teacher %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.path == '/teacher/' %}active{% endif %}" href="{% url 'teacher_dashboard' %}">
+                                <i class="fas fa-chalkboard-teacher"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'create_assignment' %}">
+                                <i class="fas fa-plus-circle"></i> New Assignment
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        <!-- Logout - works for all users -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-md-4 main-content">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <!-- Low-Data Mode Toggle -->
+    <div class="low-data-badge no-print" onclick="toggleLowDataMode()">
+        <i class="fas fa-tachometer-alt"></i> Low Data Mode
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleLowDataMode() {
+            // Remove all CSS animations and images
+            document.querySelectorAll('img').forEach(img => img.style.display = 'none');
+            document.querySelectorAll('.card').forEach(card => {
+                card.style.transform = 'none';
+                card.style.transition = 'none';
+            });
+            document.querySelectorAll('.stat-card').forEach(card => {
+                card.style.background = '#333';
+            });
+            alert('Low Data Mode enabled! Images and animations removed.');
+        }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

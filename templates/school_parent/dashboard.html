@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Parent Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between">
+    <h2>{{ student.user.full_name }}'s Progress</h2>
+    <span class="badge bg-primary">{{ student.student_id }}</span>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5>Overall Average</h5>
+                <h2>{{ overall_average }}%</h2>
+                <small>Based on {{ total_submissions }} submissions</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5>Current Term</h5>
+                <h4>{{ current_term }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5>Fee Balance</h5>
+                <h4>${{ fee_balance }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5>Termly Results</h5>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead><tr><th>Subject</th><th>Marks</th><th>Grade</th></tr></thead>
+            <tbody>
+                {% for sub in submissions %}
+                    <tr>
+                        <td>{{ sub.assignment.subject.name }}</td>
+                        <td>{{ sub.marks_obtained }}/{{ sub.assignment.max_marks }}</td>
+                        <td>{{ sub.marks_obtained|floatformat:0 }}%</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="3">No results yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

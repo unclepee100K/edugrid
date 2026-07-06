@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ assignment.title }} - EduGrid{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h2">{{ assignment.title }}</h1>
+    <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5>Assignment Details</h5>
+                <p><strong>Subject:</strong> {{ assignment.subject.name }}</p>
+                <p><strong>Term:</strong> {{ assignment.term }}</p>
+                <p><strong>Type:</strong> {{ assignment.get_assignment_type_display }}</p>
+                <p><strong>Maximum Marks:</strong> {{ assignment.max_marks }}</p>
+                <p><strong>Due Date:</strong> {{ assignment.due_date|date:"M d, Y H:i" }}</p>
+                <p><strong>Status:</strong>
+                    {% if assignment.is_overdue %}
+                        <span class="badge bg-danger">Overdue</span>
+                    {% else %}
+                        <span class="badge bg-success">Active</span>
+                    {% endif %}
+                </p>
+
+                <hr>
+                <h5>Description</h5>
+                <p>{{ assignment.description|default:"No description provided." }}</p>
+
+                {% if assignment.document %}
+                <div class="alert alert-info">
+                    <i class="fas fa-file-pdf"></i>
+                    <a href="{{ assignment.document.url }}" target="_blank" class="alert-link">
+                        Download Assignment Document
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Submission Form -->
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5>Submit Your Work</h5>
+            </div>
+            <div class="card-body">
+                {% if existing_submission %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> You have already submitted this assignment.
+                        <br>
+                        <small>Submitted on: {{ existing_submission.submitted_on|date:"M d, Y H:i" }}</small>
+                        {% if existing_submission.is_marked %}
+                            <br>
+                            <strong>Marks: {{ existing_submission.marks_obtained }}/{{ assignment.max_marks }}</strong>
+                            <br>
+                            <small>Feedback: {{ existing_submission.feedback|default:"No feedback yet." }}</small>
+                        {% else %}
+                            <br>
+                            <span class="badge bg-warning">Awaiting Marking</span>
+                        {% endif %}
+                    </div>
+                {% elif assignment.is_overdue %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        This assignment is overdue. Submission is closed.
+                    </div>
+                {% else %}
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Upload File (PDF, Word, or Image)</label>
+                            <input type="file" name="submitted_file" class="form-control" accept=".pdf,.doc,.docx,.jpg,.png">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Or type your response</label>
+                            <textarea name="text_response" class="form-control" rows="4" placeholder="Write your answer here..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-upload"></i> Submit Assignment
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

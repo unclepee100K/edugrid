@@ -1,0 +1,90 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-chalkboard-teacher"></i> Teacher Dashboard</h1>
+    <a href="{% url 'create_assignment' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> New Assignment
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-warning">
+                <h5><i class="fas fa-clock"></i> Pending Submissions ({{ pending_count }})</h5>
+            </div>
+            <div class="card-body">
+                {% if pending_submissions %}
+                    {% for sub in pending_submissions %}
+                        <div class="border-bottom py-2">
+                            <strong>{{ sub.student.user.full_name }}</strong>
+                            <span class="badge bg-secondary">{{ sub.assignment.title }}</span>
+                            <a href="{% url 'mark_submission' sub.id %}" class="btn btn-sm btn-primary float-end">Mark</a>
+                            <small class="d-block text-muted">
+                                Submitted: {{ sub.submitted_on|date:"M d, H:i" }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No pending submissions. Great job!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5><i class="fas fa-check-circle"></i> Recent Marked</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_marked %}
+                    {% for sub in recent_marked %}
+                        <div class="border-bottom py-2">
+                            {{ sub.student.user.full_name }} – {{ sub.assignment.title }}
+                            <span class="badge bg-success float-end">
+                                {{ sub.marks_obtained }}/{{ sub.assignment.max_marks }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No marks yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mt-4">
+    <div class="card-header">
+        <h5><i class="fas fa-list"></i> My Assignments</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Subject</th>
+                    <th>Due</th>
+                    <th>Submissions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ass in assignments %}
+                    <tr>
+                        <td>{{ ass.title }}</td>
+                        <td>{{ ass.subject.name }}</td>
+                        <td>{{ ass.due_date|date:"M d, Y" }}</td>
+                        <td>{{ ass.submissions.count }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4">No assignments created yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
