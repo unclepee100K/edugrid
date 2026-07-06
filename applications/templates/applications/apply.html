@@ -1,0 +1,199 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Apply to EduGrid{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3><i class="fas fa-user-plus"></i> Application for Admission</h3>
+                    <p class="mb-0">Please fill in all required fields (*)</p>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <!-- Child Details -->
+                        <h5 class="border-bottom pb-2"><i class="fas fa-child"></i> Child's Details</h5>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name *</label>
+                                    {{ form.child_full_name }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Date of Birth *</label>
+                                    {{ form.child_dob }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Gender *</label>
+                                    {{ form.child_gender }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">Nationality *</label>
+                                    {{ form.child_nationality }}
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label class="form-label">ID Number (if available)</label>
+                                    {{ form.child_id_number }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Current School (if transferring)</label>
+                                    {{ form.current_school }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Current Form/Grade</label>
+                                    {{ form.current_form }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Desired Form *</label>
+                                    {{ form.desired_form }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Preferred Subject Bundle</label>
+                                    {{ form.subject_bundle }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Special Needs / Medical Conditions</label>
+                                    {{ form.special_needs }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Parent Details -->
+                        <h5 class="border-bottom pb-2 mt-4"><i class="fas fa-user"></i> Parent/Guardian Details</h5>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Full Name *</label>
+                                    {{ form.parent_full_name }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Relationship *</label>
+                                    {{ form.parent_relationship }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Phone Number *</label>
+                                    {{ form.parent_phone }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Email *</label>
+                                    {{ form.parent_email }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Physical Address *</label>
+                                    {{ form.parent_address }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Occupation</label>
+                                    {{ form.parent_occupation }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Employer</label>
+                                    {{ form.parent_employer }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Documents -->
+                        <h5 class="border-bottom pb-2 mt-4"><i class="fas fa-file-upload"></i> Documents</h5>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Birth Certificate *</label>
+                                    {{ form.birth_certificate }}
+                                    <small class="text-muted">{{ form.birth_certificate.help_text }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Child Photo *</label>
+                                    {{ form.child_photo }}
+                                    <small class="text-muted">{{ form.child_photo.help_text }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">School Report</label>
+                                    {{ form.school_report }}
+                                    <small class="text-muted">{{ form.school_report.help_text }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Parent ID Copy</label>
+                                    {{ form.parent_id_copy }}
+                                    <small class="text-muted">{{ form.parent_id_copy.help_text }}</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional -->
+                        <h5 class="border-bottom pb-2 mt-4"><i class="fas fa-info-circle"></i> Additional Information</h5>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Preferred Start Date *</label>
+                                    {{ form.preferred_start_date }}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">How did you hear about us?</label>
+                                    {{ form.hear_about_us }}
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Comments / Requests</label>
+                                    {{ form.comments }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane"></i> Submit Application
+                            </button>
+                            <a href="/" class="btn btn-secondary btn-lg">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

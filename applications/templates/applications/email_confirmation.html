@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #1a237e; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; }
+        .footer { background: #f0f0f0; padding: 10px; text-align: center; font-size: 12px; }
+        .ref { font-size: 24px; font-weight: bold; color: #1a237e; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>EduGrid School</h2>
+            <p>Application Confirmation</p>
+        </div>
+        <div class="content">
+            <p>Dear {{ application.parent_full_name }},</p>
+            <p>Thank you for applying to EduGrid School.</p>
+            <p>Your application has been received and is being reviewed.</p>
+            <p><strong>Application Reference:</strong> <span class="ref">{{ application.reference_number }}</span></p>
+            <h4>Application Summary:</h4>
+            <ul>
+                <li><strong>Child:</strong> {{ application.child_full_name }}</li>
+                <li><strong>Desired Form:</strong> {{ application.desired_form }}</li>
+                <li><strong>Submitted:</strong> {{ application.submitted_date|date:"M d, Y" }}</li>
+            </ul>
+            <p>We will contact you within 7 days regarding the status of your application.</p>
+            <p>You can check your application status at any time using your reference number.</p>
+            <p><a href="{{ site_url }}/applications/status/">Check Application Status</a></p>
+            <hr>
+            <p><strong>Contact Us:</strong><br>
+            Phone: +263 77 123 4567<br>
+            Email: admissions@edugrid.school</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 EduGrid School. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

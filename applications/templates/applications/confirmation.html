@@ -1,0 +1,32 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Application Confirmed{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white text-center">
+                <h2><i class="fas fa-check-circle"></i> Application Submitted!</h2>
+            </div>
+            <div class="card-body text-center">
+                <h4>Thank you for applying to EduGrid School</h4>
+                <p class="lead">Your application reference number is:</p>
+                <div class="display-4 text-primary fw-bold">{{ application.reference_number }}</div>
+                <p class="mt-3"><strong>Please save this number for future reference.</strong></p>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    You will receive a confirmation SMS and email shortly.
+                </div>
+                <hr>
+                <p>You can check your application status at any time using your reference number.</p>
+                <a href="/applications/status/" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Check Application Status
+                </a>
+                <a href="/" class="btn btn-secondary">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

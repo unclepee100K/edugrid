@@ -1,0 +1,167 @@
+﻿{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Application Details{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Application: {{ application.reference_number }}</h1>
+    <a href="{% url 'admin_applications' %}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back
+    </a>
+</div>
+
+<div class="row">
+    <!-- Application Details -->
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header">
+                <h5><i class="fas fa-user"></i> Application Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Status:</strong> 
+                            <span class="badge {% if application.status == 'ACCEPTED' %}bg-success{% elif application.status == 'DECLINED' %}bg-danger{% elif application.status == 'WAITLISTED' %}bg-warning{% else %}bg-primary{% endif %}">
+                                {{ application.get_status_display }}
+                            </span>
+                        </p>
+                        <p><strong>Submitted:</strong> {{ application.submitted_date|date:"M d, Y H:i" }}</p>
+                        <p><strong>Reviewed:</strong> {{ application.reviewed_date|date:"M d, Y H:i"|default:"Not reviewed" }}</p>
+                        <p><strong>Reviewed By:</strong> {{ application.reviewed_by|default:"N/A" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Child:</strong> {{ application.child_full_name }}</p>
+                        <p><strong>DOB:</strong> {{ application.child_dob|date:"M d, Y" }}</p>
+                        <p><strong>Gender:</strong> {{ application.get_child_gender_display }}</p>
+                        <p><strong>Nationality:</strong> {{ application.child_nationality }}</p>
+                    </div>
+                </div>
+                <hr>
+                <h6>Academic Information</h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <p><strong>Current School:</strong> {{ application.current_school|default:"N/A" }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Current Form:</strong> {{ application.current_form|default:"N/A" }}</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p><strong>Desired Form:</strong> {{ application.desired_form }}</p>
+                    </div>
+                </div>
+                <p><strong>Subject Bundle:</strong> {{ application.subject_bundle|default:"Not specified" }}</p>
+                <p><strong>Special Needs:</strong> {{ application.special_needs|default:"None" }}</p>
+                
+                <hr>
+                <h6>Parent/Guardian Information</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Name:</strong> {{ application.parent_full_name }}</p>
+                        <p><strong>Relationship:</strong> {{ application.get_parent_relationship_display }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Phone:</strong> {{ application.parent_phone }}</p>
+                        <p><strong>Email:</strong> {{ application.parent_email }}</p>
+                    </div>
+                </div>
+                <p><strong>Address:</strong> {{ application.parent_address }}</p>
+                <p><strong>Occupation:</strong> {{ application.parent_occupation|default:"N/A" }}</p>
+                <p><strong>Employer:</strong> {{ application.parent_employer|default:"N/A" }}</p>
+                
+                <hr>
+                <h6>Documents</h6>
+                <div class="row">
+                    <div class="col-md-3">
+                        <a href="{{ application.birth_certificate.url }}" target="_blank" class="btn btn-sm btn-primary">
+                            <i class="fas fa-file"></i> Birth Cert
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        {% if application.school_report %}
+                        <a href="{{ application.school_report.url }}" target="_blank" class="btn btn-sm btn-primary">
+                            <i class="fas fa-file"></i> School Report
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ application.child_photo.url }}" target="_blank" class="btn btn-sm btn-primary">
+                            <i class="fas fa-image"></i> Photo
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        {% if application.parent_id_copy %}
+                        <a href="{{ application.parent_id_copy.url }}" target="_blank" class="btn btn-sm btn-primary">
+                            <i class="fas fa-file"></i> Parent ID
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                <hr>
+                <p><strong>Preferred Start Date:</strong> {{ application.preferred_start_date|date:"M d, Y" }}</p>
+                <p><strong>Heard About Us:</strong> {{ application.get_hear_about_us_display|default:"Not specified" }}</p>
+                <p><strong>Comments:</strong> {{ application.comments|default:"None" }}</p>
+                
+                {% if application.internal_notes %}
+                <hr>
+                <h6>Internal Notes</h6>
+                <p class="text-muted">{{ application.internal_notes }}</p>
+                {% endif %}
+                
+                {% if application.decline_reason %}
+                <hr>
+                <div class="alert alert-danger">
+                    <strong>Decline Reason:</strong> {{ application.decline_reason }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action Panel -->
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5><i class="fas fa-tasks"></i> Actions</h5>
+            </div>
+            <div class="card-body">
+                {% if application.status == 'PENDING' or application.status == 'WAITLISTED' %}
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Accept -->
+                    <button type="submit" name="action" value="accept" class="btn btn-success w-100 mb-2">
+                        <i class="fas fa-check"></i> Accept Application
+                    </button>
+                    
+                    <!-- Waitlist -->
+                    <button type="submit" name="action" value="waitlist" class="btn btn-warning w-100 mb-2">
+                        <i class="fas fa-hourglass-half"></i> Waitlist
+                    </button>
+                    
+                    <!-- Decline -->
+                    <div class="mb-3">
+                        <label class="form-label">Decline Reason</label>
+                        <textarea name="decline_reason" class="form-control" rows="3" placeholder="Reason for declining..."></textarea>
+                    </div>
+                    <button type="submit" name="action" value="decline" class="btn btn-danger w-100">
+                        <i class="fas fa-times"></i> Decline Application
+                    </button>
+                </form>
+                {% else %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    This application has already been processed.
+                </div>
+                <p><strong>Status:</strong> {{ application.get_status_display }}</p>
+                {% endif %}
+                
+                <hr>
+                <div class="alert alert-secondary">
+                    <small><strong>Note:</strong> Accepting will automatically create a student account and profile.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
